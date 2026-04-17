@@ -1,14 +1,12 @@
-// 1. On stocke l'adresse de base dans une "boîte" étiquetée BASE_URL
 const BASE_URL = 'https://eonet.gsfc.nasa.gov/api/v3';
 
-// 2. La fonction magique
-export async function fetchEvents(limit = 20) {
+export async function fetchEvents() {
   try {
-    const response = await fetch(`${BASE_URL}/events?limit=${limit}`);
+    const response = await fetch(`${BASE_URL}/events?days=365&status=all`);
+
     if (!response.ok) throw new Error(`Erreur HTTP`);
+
     const data = await response.json();
-
-
     return data.events;
   } catch (error) {
     console.error(error);

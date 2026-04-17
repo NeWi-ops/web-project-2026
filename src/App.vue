@@ -1,64 +1,121 @@
 <script setup>
-  import { ref, computed, onMounted } from 'vue';
-  import EventList from './components/eventList.vue';
-  import EventMap from './components/eventMap.vue';
-  import { fetchEvents } from './services/nasaAPI.js';
-
-  const events = ref([]);
-  const isLoading = ref(true);
-
-  // --- LOGIQUE DE TRI CENTRALISÉE ---
-  const sortType = ref('date');
-
-  onMounted(async () => {
-    try {
-      const data = await fetchEvents(100);
-      events.value = data;
-    } finally {
-      isLoading.value = false;
-    }
-  });
-
-  // On crée une liste filtrée/triée ici pour la partager aux deux composants
-  const filteredEvents = computed(() => {
-    let result = [...events.value];
-
-    // Exemple de tri par date (le même que tu as dans ta liste)
-    result.sort((a, b) => new Date(b.closed || b.date) - new Date(a.closed || a.date));
-
-    // On peut limiter à 20 pour ne pas surcharger la carte
-    return result.slice(0, 100);
-  });
 </script>
 
 <template>
   <div class="app-layout">
     <header class="main-header">
-      <h1>🌍 NASA Earth Tracker</h1>
+      <div class="logo">NASA EONET Tracker</div>
+      <nav class="main-nav">
+        <router-link to="/">Carte Interactive</router-link>
+        <router-link to="/favoris">Mes Favoris</router-link>
+        <router-link to="/stats">Statistiques</router-link>
+      </nav>
     </header>
 
     <main class="main-content">
-      <div class="sidebar">
-        <EventList :events="filteredEvents" :loading="isLoading" />
-      </div>
-
-      <div class="map-area">
-        <EventMap :events="filteredEvents" />
-      </div>
+      <router-view v-slot="{ Component }">
+        <transition name="fade" mode="out-in">
+          <keep-alive>
+            <component :is="Component" />
+          </keep-alive>
+        </transition>
+      </router-view>
     </main>
-    </div>
+  </div>
 </template>
 
-<style scoped>
-/* Ton CSS reste identique */
-.app-layout { display: flex; flex-direction: column; height: 100vh; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
-.main-header { background-color: #0b3d91; color: white; padding: 1rem; text-align: center; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-.main-content { display: flex; flex: 1; overflow: hidden; }
-.sidebar { width: 400px; height: 100%; border-right: 1px solid #ddd; display: flex; flex-direction: column; z-index: 2;}
+<style>
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Arial', sans-serif;
+  background-color: #f8f9fa;
+  overflow: hidden;
+}
 
-.map-area {
+#app {
+  height: 100%;
+}
+
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.main-header {
+  background-color: #0b3d91;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  height: 60px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2000;
+}
+
+.logo {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.main-nav {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.main-nav a {
+  color: #e0e0e0;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 0.5rem;
+  transition: color 0.3s;
+}
+
+.main-nav a:hover, .main-nav a.router-link-active {
+  color: white;
+  border-bottom: 2px solid white;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
   flex: 1;
   position: relative;
+  overflow: hidden;
 }
-.main-footer { background-color: #222; color: #aaa; text-align: center; padding: 0.5rem; font-size: 0.8rem; }
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.25s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+@media (max-width: 768px) {
+  .main-header {
+    flex-direction: column;
+    height: auto;
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .main-nav {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .main-nav a {
+    font-size: 0.9rem;
+    padding: 0.3rem;
+  }
+}
 </style>
