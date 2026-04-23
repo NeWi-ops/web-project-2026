@@ -3,7 +3,12 @@ const STORAGE_KEY = 'nasa_eonet_favorites';
 export const favoritesService = {
   getFavorites() {
     const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : [];
+    if (!saved) return [];
+    try {
+      return JSON.parse(saved);
+    } catch {
+      return [];
+    }
   },
   toggleFavorite(eventId) {
     let favorites = this.getFavorites();

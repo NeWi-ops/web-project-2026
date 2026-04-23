@@ -9,7 +9,7 @@ export const fetchWikipediaInfo = async (query) => {
     if (data.query && data.query.pages) {
       const pages = Object.values(data.query.pages);
       if (pages.length > 0) {
-        console.log(`✅ [Wiki] Article trouvé : ${pages[0].title}`);
+        console.log(`[Wiki] Article trouvé : ${pages[0].title}`);
         return {
           title: pages[0].title,
           extract: pages[0].extract,

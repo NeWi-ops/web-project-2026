@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch, nextTick } from 'vue';
+import { ref, onMounted, watch, nextTick, onActivated } from 'vue';
 import { favoritesService } from '../services/favoritesService';
 import { fetchWikipediaInfo } from '../services/wikipediaAPI';
 
@@ -16,6 +16,10 @@ const loadedWiki = ref({});
 const loadingWikiId = ref(null);
 
 onMounted(() => {
+  favoriteIds.value = favoritesService.getFavorites();
+});
+
+onActivated(() => {
   favoriteIds.value = favoritesService.getFavorites();
 });
 

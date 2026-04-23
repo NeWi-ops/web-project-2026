@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, onActivated } from 'vue';
 import { fetchEvents } from '../services/nasaAPI';
 import { favoritesService } from '../services/favoritesService';
 import EventList from '../components/eventList.vue';
@@ -15,6 +15,10 @@ onMounted(async () => {
   } finally {
     isLoading.value = false;
   }
+});
+
+onActivated(() => {
+  favoriteIds.value = favoritesService.getFavorites();
 });
 
 const favoriteEvents = computed(() => {
